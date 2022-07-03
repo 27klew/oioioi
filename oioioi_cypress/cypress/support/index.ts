@@ -23,6 +23,8 @@ declare namespace Cypress {
 
         // User related commands
         login(user: OIOIOI.User): Chainable<null>
+        logout()
+        register(user: OIOIOI.User): Chainable<null>
 
         // Language related commands
         setLang(language: string): Chainable<null>
