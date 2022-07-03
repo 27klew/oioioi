@@ -52,8 +52,59 @@ context("Access settings for contest", () => {
           deleteContest(name);
         });
       });
+
+
+
+      it('should send message', function () {
+        const name = uuidv4().substring(10);
+        addContest("Simple programming contest", name);
+        cy.get('.form-group > .btn').click(); // Edit dashboard message.
+    
+        cy.get('#id_content').type("This is dashboard message.")
+    
+        cy.get('.form-group > .btn').click(); // Save.
+    
+        cy.contains("This is dashboard message.");
+    
+    
+        cy.logout();
+        cy.fixture("credentials").then((data) => {
+          cy.register(data.user);
+          cy.login(data.user);
+          cy.contains(name);
+          cy.visit("/c/" + name);
+          cy.contains("This is dashboard message.");
+          cy.get(".list-group").contains("Questions").click();
+          cy.contains("Ask a question").click();
+          cy.get('#id_category').select("General, Round 1");
+          cy.get("#id_topic").type("This is topic");
+          cy.get("#id_content").type("This is question");
+          cy.contains("Submit").click();
+          cy.contains("This is topic");
+          cy.logout();
+          loginAsAdmin();
+          cy.visit("/c/" + name);
+          cy.contains("This is topic").click();
+          cy.contains("This is question");
+    
+          cy.get("#id_kind").select("Public message")
+          cy.get("#id_content").type("The answer is 42.");
+          cy.contains("Submit").click();
+    
+          cy.logout();
+          cy.register(data.user_2);
+          cy.login(data.user_2);
+          cy.visit("/c/" + name);
+          cy.contains("Re: This is topic").click();
+          cy.contains("The answer is 42.");
+        });
+    
+        // deleteContest(name);
+      });
   });
 
+
+  
 
 
 const loginAsAdmin = () => {
